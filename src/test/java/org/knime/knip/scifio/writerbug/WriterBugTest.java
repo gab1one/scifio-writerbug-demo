@@ -3,7 +3,6 @@ package org.knime.knip.scifio.writerbug;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
 import io.scif.img.SCIFIOImgPlus;
-import junit.framework.Assert;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
@@ -30,7 +29,7 @@ public class WriterBugTest {
     @Test
     public void writerbugtest() throws Exception {
 
-        // This img has X,Y,Z and Channel Dimensions
+        // This image has X,Y,Z and Channel dimensions
         final ImgPlus<ByteType> imgPlus = createByteTypeImgPlus();
 
         ImgSaver m_saver = new ImgSaver();
@@ -39,7 +38,7 @@ public class WriterBugTest {
 
         final ImgOpener opener = new ImgOpener();
         List<SCIFIOImgPlus<?>> imgs = opener.openImgs(imgName);
-        SCIFIOImgPlus<?> sfimg = imgs.get(0); // This Image suddenly has X, Y, Channel, Time Dimensions
+        SCIFIOImgPlus<?> sfimg = imgs.get(0); // This image suddenly has X, Y, Channel and Time dimensions
 
         for (int i = 0; i < 4; i++) {
             String imgPlusAxis = imgPlus.axis(i).type().getLabel();
