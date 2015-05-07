@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by gabriel on 5/7/15.
  */
-public class WriterBug {
+public class WriterBugTest {
 
     List<Long> m_dimList = new ArrayList<Long>();
     List<AxisType> m_axisList = new ArrayList<AxisType>();
