@@ -57,6 +57,11 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>io.scif</groupId>
+			<artifactId>scifio-ome-xml</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- JUnit dependencies -->
 		<dependency>
