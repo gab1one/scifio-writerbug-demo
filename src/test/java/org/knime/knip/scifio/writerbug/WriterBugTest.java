@@ -22,77 +22,98 @@ import static org.junit.Assert.assertEquals;
  */
 public class WriterBugTest {
 
-    List<Long> m_dimList = new ArrayList<Long>();
-    List<AxisType> m_axisList = new ArrayList<AxisType>();
+	List<Long> m_dimList = new ArrayList<>();
+	List<AxisType> m_axisList = new ArrayList<>();
 
+	@Test
+	public void testOmeTiff() throws Exception {
 
-    @Test
-    public void writerbugtest() throws Exception {
+		// This image has X,Y,Z and Channel dimensions
+		final ImgPlus<ByteType> imgPlus = createByteTypeImgPlus();
 
-        // This image has X,Y,Z and Channel dimensions
-        final ImgPlus<ByteType> imgPlus = createByteTypeImgPlus();
+		ImgSaver m_saver = new ImgSaver();
+		String imgName = "omeTest.ome.tif";
+		m_saver.saveImg(imgName, imgPlus);
 
-        ImgSaver m_saver = new ImgSaver();
-        String imgName = "test.ome.tif";
-        m_saver.saveImg(imgName, imgPlus);
+		final ImgOpener opener = new ImgOpener();
+		List<SCIFIOImgPlus<?>> imgs = opener.openImgs(imgName);
+		SCIFIOImgPlus<?> sfimg = imgs.get(0); // This image suddenly has X, Y,
+												// Channel and Time dimensions
 
-        final ImgOpener opener = new ImgOpener();
-        List<SCIFIOImgPlus<?>> imgs = opener.openImgs(imgName);
-        SCIFIOImgPlus<?> sfimg = imgs.get(0); // This image suddenly has X, Y, Channel and Time dimensions
+		for (int i = 0; i < 4; i++) {
+			String imgPlusAxis = imgPlus.axis(i).type().getLabel();
+			String scifImgPlusAxis = sfimg.axis(i).type().getLabel();
+			assertEquals("Axes are not equal: read axis is " + scifImgPlusAxis + ", but the source img axis was: "
+					+ imgPlusAxis, imgPlusAxis, scifImgPlusAxis);
+		}
+	}
 
-        for (int i = 0; i < 4; i++) {
-            String imgPlusAxis = imgPlus.axis(i).type().getLabel();
-            String scifImgPlusAxis = sfimg.axis(i).type().getLabel();
-            assertEquals("Axes are not equal: read axis is " + scifImgPlusAxis +
-                    ", but the source img axis was: " + imgPlusAxis, imgPlusAxis, scifImgPlusAxis); // This fails !!
-        }
-    }
+	@Test
+	public void testTiff() throws Exception {
 
-    // HELPER METHODS
+		// This image has X,Y,Z and Channel dimensions
+		final ImgPlus<ByteType> imgPlus = createByteTypeImgPlus();
 
-    /**
-     * @return Empty ByteType ImgPlus
-     */
-    private ImgPlus<ByteType> createByteTypeImgPlus() {
+		ImgSaver m_saver = new ImgSaver();
+		String imgName = "tiffTest.tif";
+		m_saver.saveImg(imgName, imgPlus);
 
-        // Dimension creation playground
-        processDimension(100, "X");
-        processDimension(100, "Y");
-        processDimension(4, "Z");
-        processDimension(3, "Channel");
-        processDimension(0, "Time");
+		final ImgOpener opener = new ImgOpener();
+		List<SCIFIOImgPlus<?>> imgs = opener.openImgs(imgName);
+		SCIFIOImgPlus<?> sfimg = imgs.get(0); // This image suddenly has X, Y,
+												// Channel and Time dimensions
 
+		for (int i = 0; i < 4; i++) {
+			String imgPlusAxis = imgPlus.axis(i).type().getLabel();
+			String scifImgPlusAxis = sfimg.axis(i).type().getLabel();
+			assertEquals("Axes are not equal: read axis is " + scifImgPlusAxis + ", but the source img axis was: "
+					+ imgPlusAxis, imgPlusAxis, scifImgPlusAxis);
+		}
+	}
+	// HELPER METHODS
 
-        final long[] dims = new long[m_dimList.size()];
-        for (int d = 0; d < m_dimList.size(); d++) {
-            dims[d] = m_dimList.get(d);
-        }
+	/**
+	 * @return Empty ByteType ImgPlus
+	 */
+	private ImgPlus<ByteType> createByteTypeImgPlus() {
 
-        ArrayImgFactory<ByteType> fac = new ArrayImgFactory<ByteType>();
-        ByteType type = new ByteType();
-        Img<ByteType> img = fac.create(dims, type);
-        final ImgPlus<ByteType> imgPlus = new ImgPlus<ByteType>(img);
+		// Dimension creation playground
+		processDimension(100, "X");
+		processDimension(100, "Y");
+		processDimension(4, "Z");
+		processDimension(3, "Channel");
+		processDimension(0, "Time");
 
-        int d = 0;
-        for (final AxisType a : m_axisList) {
-            imgPlus.setAxis(new DefaultLinearAxis(a), d++);
-        }
-        return imgPlus;
-    }
+		final long[] dims = new long[m_dimList.size()];
+		for (int d = 0; d < m_dimList.size(); d++) {
+			dims[d] = m_dimList.get(d);
+		}
 
-    /**
-     * Add this dimensions to the list of axes and dims.
-     *
-     * @param val   the value, 0 means ignore
-     * @param label the label to use for the axis
-     */
-    private void processDimension(final int val, final String label) {
-        // ignore empty dimensions
-        if (val != 0) {
-            m_dimList.add((long) val);
-            m_axisList.add(Axes.get(label));
-        }
-    }
+		ArrayImgFactory<ByteType> fac = new ArrayImgFactory<>();
+		ByteType type = new ByteType();
+		Img<ByteType> img = fac.create(dims, type);
+		final ImgPlus<ByteType> imgPlus = new ImgPlus<>(img);
 
+		int d = 0;
+		for (final AxisType a : m_axisList) {
+			imgPlus.setAxis(new DefaultLinearAxis(a), d++);
+		}
+		return imgPlus;
+	}
 
+	/**
+	 * Add this dimensions to the list of axes and dims.
+	 *
+	 * @param val
+	 *            the value, 0 means ignore
+	 * @param label
+	 *            the label to use for the axis
+	 */
+	private void processDimension(final int val, final String label) {
+		// ignore empty dimensions
+		if (val != 0) {
+			m_dimList.add((long) val);
+			m_axisList.add(Axes.get(label));
+		}
+	}
 }

@@ -1,4 +1,8 @@
 .idea/
 target
-test.ome.tif
+omeTest.ome.tif
+tiffTest.tif
+.project
+.settings
+.classpath
 scifio-writerbug.iml
